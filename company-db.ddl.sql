@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS recruiter_profiles (
     id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
     first_name VARCHAR(64) NOT NULL,
     last_name VARCHAR(64) NOT NULL,
-    company_id uuid NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    company_id uuid REFERENCES companies(id) ON DELETE CASCADE,
     account_id uuid NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
-    recruiter_role recruiter_role NOT NULL
+    recruiter_role recruiter_role
 );
 
 CREATE TABLE IF NOT EXISTS companies (
