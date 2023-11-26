@@ -1,7 +1,9 @@
 import uuid
 
+from pydantic import EmailStr
+
 from lavoro_company_api.database import db
-from lavoro_library.models import CompanyInDB, RecruiterProfileInDB, RecruiterProfileWithCompanyName
+from lavoro_library.models import CompanyInDB, CompanyInvitation, RecruiterProfileInDB, RecruiterProfileWithCompanyName
 
 
 def get_company_by_id(company_id: uuid.UUID):
@@ -75,14 +77,13 @@ def fetch_recruiter_profile_with_company_name(account_id: uuid.UUID):
         return None
 
 
-def insert_recruiter_profile(first_name: str, last_name: str, account_id: uuid.UUID, company_id: uuid.UUID = None):
+def insert_recruiter_profile(first_name: str, last_name: str, account_id: uuid.UUID, company_id: uuid.UUID = None, recruiter_role: str = "admin"):
     query_tuple = (
         """
-        INSERT INTO recruiter_profiles (first_name, last_name, company_id, account_id)
-        VALUES (%s, %s, %s, %s)
-        RETURNING id;
+        INSERT INTO recruiter_profiles (first_name, last_name, company_id, account_id, recruiter_role)
+        VALUES (%s, %s, %s, %s, %s);
         """,
-        (first_name, last_name, company_id, account_id),
+        (first_name, last_name, company_id, account_id, recruiter_role),
     )
     result = db.execute_one(query_tuple)
     return result["affected_rows"] == 1
@@ -97,5 +98,32 @@ def update_recruiter_company(account_id: uuid.UUID, company_id: uuid.UUID):
         """,
         (company_id, account_id),
     )
+    result = db.execute_one(query_tuple)
+    return result["affected_rows"] == 1
+
+
+def insert_invitation(company_id: uuid.UUID, new_recruiter_email: EmailStr, token: str):
+    query_tuple = (
+        """
+        INSERT INTO invite_tokens (email, company_id, token)
+        VALUES (%s, %s, %s);
+        """,
+        (new_recruiter_email, company_id, token),
+    )
+    result = db.execute_one(query_tuple)
+    return result["affected_rows"] == 1
+
+
+def fetch_invitation(token: str):
+    query_tuple = ("SELECT * FROM invite_tokens WHERE token = %s", (token,))
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return CompanyInvitation(**result["result"][0])
+    else:
+        return None
+
+
+def delete_invitation(token: str):
+    query_tuple = ("DELETE FROM invite_tokens WHERE token = %s", (token,))
     result = db.execute_one(query_tuple)
     return result["affected_rows"] == 1
