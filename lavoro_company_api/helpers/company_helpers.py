@@ -7,6 +7,7 @@ from lavoro_company_api.database.queries import (
     insert_and_select_company,
     update_recruiter_company,
 )
+
 from lavoro_library.models import CreateCompanyRequest, RecruiterRole
 
 
