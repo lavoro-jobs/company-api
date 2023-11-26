@@ -77,7 +77,9 @@ def fetch_recruiter_profile_with_company_name(account_id: uuid.UUID):
         return None
 
 
-def insert_recruiter_profile(first_name: str, last_name: str, account_id: uuid.UUID, company_id: uuid.UUID = None, recruiter_role: str = "admin"):
+def insert_recruiter_profile(
+    first_name: str, last_name: str, account_id: uuid.UUID, company_id: uuid.UUID = None, recruiter_role: str = "admin"
+):
     query_tuple = (
         """
         INSERT INTO recruiter_profiles (first_name, last_name, company_id, account_id, recruiter_role)
