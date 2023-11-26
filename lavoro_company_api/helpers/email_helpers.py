@@ -14,4 +14,3 @@ def send_invite_email(email: EmailStr, token: str, company_name: str):
     """
 
     return send_email(email, f"Lavoro - Invitation to join {company_name}", message_html)
-

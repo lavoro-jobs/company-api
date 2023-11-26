@@ -50,5 +50,3 @@ def can_join_company(invite_token: str):
 @router.post("/join-company/{company_id}/{account_id}")
 def join_company(company_id: uuid.UUID, account_id: uuid.UUID):
     add_recruiter_to_company(company_id, account_id)
-
-
