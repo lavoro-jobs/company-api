@@ -3,7 +3,13 @@ import uuid
 from pydantic import EmailStr
 
 from lavoro_company_api.database import db
-from lavoro_library.models import CompanyInDB, CompanyInvitation, RecruiterProfileInDB, RecruiterProfileWithCompanyName
+from lavoro_library.models import (
+    CompanyInDB,
+    CompanyInvitation,
+    RecruiterProfileInDB,
+    RecruiterProfileWithCompanyName,
+    RecruiterRole,
+)
 
 
 def get_company_by_id(company_id: uuid.UUID):
@@ -78,7 +84,11 @@ def fetch_recruiter_profile_with_company_name(account_id: uuid.UUID):
 
 
 def insert_recruiter_profile(
-    first_name: str, last_name: str, account_id: uuid.UUID, company_id: uuid.UUID = None, recruiter_role: str = "admin"
+    first_name: str,
+    last_name: str,
+    account_id: uuid.UUID,
+    recruiter_role: RecruiterRole,
+    company_id: uuid.UUID = None,
 ):
     query_tuple = (
         """

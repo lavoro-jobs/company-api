@@ -9,18 +9,22 @@ from lavoro_company_api.database.queries import (
 )
 from lavoro_company_api.helpers.invitation_helpers import check_invite_token
 from lavoro_company_api.helpers.recruiter_helpers import add_recruiter_to_company
-from lavoro_library.models import CreateRecruiterProfileRequest
+from lavoro_library.models import CreateRecruiterProfileRequest, RecruiterRole
 
 
 router = APIRouter(prefix="/recruiter", tags=["recruiter"])
 
 
-@router.post("/create-recruiter-profile/{account_id}")
-def create_recruiter_profile(account_id: uuid.UUID, payload: CreateRecruiterProfileRequest):
+@router.post("/create-recruiter-profile/{account_id}/{recruiter_role}")
+def create_recruiter_profile(
+    account_id: uuid.UUID, recruiter_role: RecruiterRole, payload: CreateRecruiterProfileRequest
+):
     recruiter_profile = fetch_recruiter_profile(account_id)
     if recruiter_profile:
         raise HTTPException(status_code=400, detail="Recruiter profile already exists")
-    result = insert_recruiter_profile(payload.first_name, payload.last_name, account_id, company_id=payload.company_id)
+    result = insert_recruiter_profile(
+        payload.first_name, payload.last_name, account_id, recruiter_role, company_id=payload.company_id
+    )
     if not result:
         raise HTTPException(status_code=400, detail="Recruiter profile could not be created")
     return {"detail": "Recruiter profile created"}
