@@ -114,16 +114,25 @@ def update_recruiter_company(account_id: uuid.UUID, company_id: uuid.UUID):
     return result["affected_rows"] == 1
 
 
-def insert_invitation(company_id: uuid.UUID, new_recruiter_email: EmailStr, token: str):
-    query_tuple = (
-        """
-        INSERT INTO invite_tokens (email, company_id, token)
-        VALUES (%s, %s, %s);
-        """,
-        (new_recruiter_email, company_id, token),
-    )
-    result = db.execute_one(query_tuple)
-    return result["affected_rows"] == 1
+def insert_invitation_and_revoke_old(company_id: uuid.UUID, new_recruiter_email: EmailStr, token: str):
+    query_tuple_list = [
+        (
+            """
+            DELETE FROM invite_tokens
+            WHERE email = %s AND company_id = %s;
+            """,
+            (new_recruiter_email, company_id),
+        ),
+        (
+            """
+            INSERT INTO invite_tokens (email, company_id, token)
+            VALUES (%s, %s, %s);
+            """,
+            (new_recruiter_email, company_id, token),
+        ),
+    ]
+    result = db.execute_many(query_tuple_list)
+    return result["affected_rows"] > 0
 
 
 def fetch_invitation(token: str):

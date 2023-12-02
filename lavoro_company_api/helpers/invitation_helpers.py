@@ -3,7 +3,7 @@ import uuid
 
 from fastapi import HTTPException
 
-from lavoro_company_api.database.queries import insert_invitation, fetch_invitation
+from lavoro_company_api.database.queries import insert_invitation_and_revoke_old, fetch_invitation
 
 
 def generate_invite_token():
@@ -12,7 +12,7 @@ def generate_invite_token():
 
 def create_invite_token(company_id: uuid.UUID, new_recruiter_email: str):
     invite_token = generate_invite_token()
-    insert_invitation(company_id, new_recruiter_email, invite_token)
+    insert_invitation_and_revoke_old(company_id, new_recruiter_email, invite_token)
     return invite_token
 
 
