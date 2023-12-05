@@ -1,6 +1,8 @@
+import base64
 import uuid
 
 from pydantic import EmailStr
+from typing import Union
 
 from lavoro_company_api.database import db
 from lavoro_library.models import (
@@ -39,17 +41,21 @@ def get_company_by_recruiter(account_id: uuid.UUID):
         return None
 
 
-def insert_and_select_company(name: str, description: str, logo: bytes, account_id: uuid.UUID = None):
-    query_tuple = (
-        """
-        INSERT INTO companies (name, description, logo)
-        VALUES (%s, %s, %s)
-        RETURNING *;
-        """,
-        (name, description, logo),
-    )
+def insert_and_select_company(name: str, description: str, logo: Union[bytes, None], account_id: uuid.UUID = None):
+    columns = ["name", "description"]
+    values = [name, description]
 
-    result = db.execute_one(query_tuple)
+    if logo:
+        columns.append("logo")
+        values.append(base64.b64decode(logo))
+
+    query = f"""
+        INSERT INTO companies ({", ".join(columns)})
+        VALUES ({", ".join(["%s"] * len(columns))})
+        RETURNING *;
+        """
+
+    result = db.execute_one((query, tuple(values)))
     if result["result"]:
         return CompanyInDB(**result["result"][0])
     else:
