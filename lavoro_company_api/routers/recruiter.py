@@ -9,7 +9,10 @@ from lavoro_company_api.database.queries import (
 )
 from lavoro_company_api.helpers.invitation_helpers import check_invite_token
 from lavoro_company_api.helpers.recruiter_helpers import add_recruiter_to_company
-from lavoro_library.models import CreateRecruiterProfileWithCompanyRequest, RecruiterRole
+
+# from lavoro_library.models import CreateRecruiterProfileWithCompanyRequest, RecruiterRole
+from lavoro_library.model.company_api.db_models import RecruiterRole
+from lavoro_library.model.company_api.dtos import CreateRecruiterProfileWithCompanyDTO
 
 
 router = APIRouter(prefix="/recruiter", tags=["recruiter"])
@@ -17,7 +20,7 @@ router = APIRouter(prefix="/recruiter", tags=["recruiter"])
 
 @router.post("/create-recruiter-profile/{account_id}/{recruiter_role}")
 def create_recruiter_profile(
-    account_id: uuid.UUID, recruiter_role: RecruiterRole, payload: CreateRecruiterProfileWithCompanyRequest
+    account_id: uuid.UUID, recruiter_role: RecruiterRole, payload: CreateRecruiterProfileWithCompanyDTO
 ):
     recruiter_profile = fetch_recruiter_profile(account_id)
     if recruiter_profile:

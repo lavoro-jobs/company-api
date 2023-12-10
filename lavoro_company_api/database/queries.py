@@ -5,20 +5,24 @@ from pydantic import EmailStr
 from typing import Union
 
 from lavoro_company_api.database import db
-from lavoro_library.models import (
-    CompanyInDB,
-    CompanyInvitation,
-    RecruiterProfileInDB,
-    RecruiterProfileWithCompanyName,
-    RecruiterRole,
-)
+
+# from lavoro_library.models import (
+#     CompanyInDB,
+#     CompanyInvitation,
+#     RecruiterProfileInDB,
+#     RecruiterProfileWithCompanyName,
+#     RecruiterRole,
+# )
+
+from lavoro_library.model.company_api.db_models import Company, RecruiterProfile, InviteToken, RecruiterRole
+from lavoro_library.model.company_api.dtos import RecruiterProfileWithCompanyNameDTO
 
 
 def get_company_by_id(company_id: uuid.UUID):
     query_tuple = ("SELECT * FROM companies WHERE id = %s", (company_id,))
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return CompanyInDB(**result["result"][0])
+        return Company(**result["result"][0])
     else:
         return None
 
@@ -36,7 +40,7 @@ def get_company_by_recruiter(account_id: uuid.UUID):
     )
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return CompanyInDB(**result["result"][0])
+        return Company(**result["result"][0])
     else:
         return None
 
@@ -57,7 +61,7 @@ def insert_and_select_company(name: str, description: str, logo: Union[bytes, No
 
     result = db.execute_one((query, tuple(values)))
     if result["result"]:
-        return CompanyInDB(**result["result"][0])
+        return Company(**result["result"][0])
     else:
         return None
 
@@ -66,7 +70,7 @@ def fetch_recruiter_profile(account_id: uuid.UUID):
     query_tuple = ("SELECT * FROM recruiter_profiles WHERE account_id = %s", (account_id,))
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return RecruiterProfileInDB(**result["result"][0])
+        return RecruiterProfile(**result["result"][0])
     else:
         return None
 
@@ -84,7 +88,7 @@ def fetch_recruiter_profile_with_company_name(account_id: uuid.UUID):
     )
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return RecruiterProfileWithCompanyName(**result["result"][0])
+        return RecruiterProfileWithCompanyNameDTO(**result["result"][0])
     else:
         return None
 
@@ -145,7 +149,7 @@ def fetch_invitation(token: str):
     query_tuple = ("SELECT * FROM invite_tokens WHERE token = %s", (token,))
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return CompanyInvitation(**result["result"][0])
+        return InviteToken(**result["result"][0])
     else:
         return None
 

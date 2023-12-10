@@ -8,7 +8,9 @@ from lavoro_company_api.database.queries import (
     update_recruiter_company,
 )
 
-from lavoro_library.models import CreateCompanyRequest, RecruiterRole
+# from lavoro_library.models import CreateCompanyRequest, RecruiterRole
+from lavoro_library.model.company_api.db_models import RecruiterRole
+from lavoro_library.model.company_api.dtos import CreateCompanyDTO
 
 
 def validate_company_creation(recruiter_account_id: uuid.UUID):
@@ -21,7 +23,7 @@ def validate_company_creation(recruiter_account_id: uuid.UUID):
         raise HTTPException(status_code=400, detail="Recruiter already has a company")
 
 
-def create_company_and_update_recruiter(payload: CreateCompanyRequest, recruiter_account_id: uuid.UUID):
+def create_company_and_update_recruiter(payload: CreateCompanyDTO, recruiter_account_id: uuid.UUID):
     created_company = insert_and_select_company(payload.name, payload.description, payload.logo)
     if not created_company:
         raise HTTPException(status_code=400, detail="Company could not be created")
