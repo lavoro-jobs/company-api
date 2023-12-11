@@ -18,7 +18,9 @@ def get_company_by_id(company_id: uuid.UUID):
     query_tuple = ("SELECT * FROM companies WHERE id = %s", (company_id,))
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return CompanyInDB(**result["result"][0])
+        company_in_db = CompanyInDB(**result["result"][0])
+        company_in_db.logo = base64.b64encode(company_in_db.logo).decode("utf-8")
+        return company_in_db
     else:
         return None
 
@@ -36,7 +38,9 @@ def get_company_by_recruiter(account_id: uuid.UUID):
     )
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return CompanyInDB(**result["result"][0])
+        company_in_db = CompanyInDB(**result["result"][0])
+        company_in_db.logo = base64.b64encode(company_in_db.logo).decode("utf-8")
+        return company_in_db
     else:
         return None
 
@@ -57,7 +61,9 @@ def insert_and_select_company(name: str, description: str, logo: Union[bytes, No
 
     result = db.execute_one((query, tuple(values)))
     if result["result"]:
-        return CompanyInDB(**result["result"][0])
+        company_in_db = CompanyInDB(**result["result"][0])
+        company_in_db.logo = base64.b64encode(company_in_db.logo).decode("utf-8")
+        return company_in_db
     else:
         return None
 
