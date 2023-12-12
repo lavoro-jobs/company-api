@@ -45,7 +45,7 @@ def get_company_by_recruiter(account_id: uuid.UUID):
         return None
 
 
-def insert_and_select_company(name: str, description: str, logo: Union[str, None], account_id: uuid.UUID = None):
+def create_and_get_company(name: str, description: str, logo: Union[bytes, None]):
     columns = ["name", "description"]
     values = [name, description]
 
@@ -66,7 +66,7 @@ def insert_and_select_company(name: str, description: str, logo: Union[str, None
         return None
 
 
-def fetch_recruiter_profile(account_id: uuid.UUID):
+def get_recruiter_profile(account_id: uuid.UUID):
     query_tuple = ("SELECT * FROM recruiter_profiles WHERE account_id = %s", (account_id,))
     result = db.execute_one(query_tuple)
     if result["result"]:
@@ -75,7 +75,7 @@ def fetch_recruiter_profile(account_id: uuid.UUID):
         return None
 
 
-def fetch_recruiter_profile_with_company_name(account_id: uuid.UUID):
+def get_recruiter_profile_with_company_name(account_id: uuid.UUID):
     query_tuple = (
         """
         SELECT recruiter_profiles.*, companies.name AS company_name
@@ -93,7 +93,7 @@ def fetch_recruiter_profile_with_company_name(account_id: uuid.UUID):
         return None
 
 
-def insert_recruiter_profile(
+def create_recruiter_profile(
     first_name: str,
     last_name: str,
     account_id: uuid.UUID,
@@ -124,7 +124,7 @@ def update_recruiter_company(account_id: uuid.UUID, company_id: uuid.UUID):
     return result["affected_rows"] == 1
 
 
-def insert_invitation_and_revoke_old(company_id: uuid.UUID, new_recruiter_email: EmailStr, token: str):
+def create_invite_token_and_revoke_old(company_id: uuid.UUID, new_recruiter_email: EmailStr, token: str):
     query_tuple_list = [
         (
             """
@@ -145,7 +145,7 @@ def insert_invitation_and_revoke_old(company_id: uuid.UUID, new_recruiter_email:
     return result["affected_rows"] > 0
 
 
-def fetch_invitation(token: str):
+def get_invitation(token: str):
     query_tuple = ("SELECT * FROM invite_tokens WHERE token = %s", (token,))
     result = db.execute_one(query_tuple)
     if result["result"]:
