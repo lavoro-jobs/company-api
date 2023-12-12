@@ -1,26 +1,24 @@
+import base64
 import uuid
 from datetime import datetime
 
 from typing import List
 
 from pydantic import EmailStr
+from typing import Union
 
 from lavoro_company_api.database import db
-from lavoro_library.models import (
-    CompanyInDB,
-    CompanyInvitation,
-    Point,
-    RecruiterProfileInDB,
-    RecruiterProfileWithCompanyName,
-    RecruiterRole,
-)
+
+from lavoro_library.model.company_api.db_models import Company, RecruiterProfile, InviteToken, RecruiterRole
+from lavoro_library.model.company_api.dtos import RecruiterProfileWithCompanyNameDTO
+from lavoro_library.model.shared import Point
 
 
 def get_company_by_id(company_id: uuid.UUID):
     query_tuple = ("SELECT * FROM companies WHERE id = %s", (company_id,))
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return CompanyInDB(**result["result"][0])
+        return Company(**result["result"][0])
     else:
         return None
 
@@ -38,38 +36,42 @@ def get_company_by_recruiter(account_id: uuid.UUID):
     )
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return CompanyInDB(**result["result"][0])
+        return Company(**result["result"][0])
     else:
         return None
 
 
-def insert_and_select_company(name: str, description: str, logo: bytes, account_id: uuid.UUID = None):
-    query_tuple = (
-        """
-        INSERT INTO companies (name, description, logo)
-        VALUES (%s, %s, %s)
+def create_and_get_company(name: str, description: str, logo: Union[bytes, None]):
+    columns = ["name", "description"]
+    values = [name, description]
+
+    if logo:
+        columns.append("logo")
+        values.append(base64.b64decode(logo))
+
+    query = f"""
+        INSERT INTO companies ({", ".join(columns)})
+        VALUES ({", ".join(["%s"] * len(columns))})
         RETURNING *;
-        """,
-        (name, description, logo),
-    )
+        """
 
-    result = db.execute_one(query_tuple)
+    result = db.execute_one((query, tuple(values)))
     if result["result"]:
-        return CompanyInDB(**result["result"][0])
+        return Company(**result["result"][0])
     else:
         return None
 
 
-def fetch_recruiter_profile(account_id: uuid.UUID):
+def get_recruiter_profile(account_id: uuid.UUID):
     query_tuple = ("SELECT * FROM recruiter_profiles WHERE account_id = %s", (account_id,))
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return RecruiterProfileInDB(**result["result"][0])
+        return RecruiterProfile(**result["result"][0])
     else:
         return None
 
 
-def fetch_recruiter_profile_with_company_name(account_id: uuid.UUID):
+def get_recruiter_profile_with_company_name(account_id: uuid.UUID):
     query_tuple = (
         """
         SELECT recruiter_profiles.*, companies.name AS company_name
@@ -82,12 +84,12 @@ def fetch_recruiter_profile_with_company_name(account_id: uuid.UUID):
     )
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return RecruiterProfileWithCompanyName(**result["result"][0])
+        return RecruiterProfileWithCompanyNameDTO(**result["result"][0])
     else:
         return None
 
 
-def insert_recruiter_profile(
+def create_recruiter_profile(
     first_name: str,
     last_name: str,
     account_id: uuid.UUID,
@@ -118,7 +120,7 @@ def update_recruiter_company(account_id: uuid.UUID, company_id: uuid.UUID):
     return result["affected_rows"] == 1
 
 
-def insert_invitation_and_revoke_old(company_id: uuid.UUID, new_recruiter_email: EmailStr, token: str):
+def create_invite_token_and_revoke_old(company_id: uuid.UUID, new_recruiter_email: EmailStr, token: str):
     query_tuple_list = [
         (
             """
@@ -139,11 +141,11 @@ def insert_invitation_and_revoke_old(company_id: uuid.UUID, new_recruiter_email:
     return result["affected_rows"] > 0
 
 
-def fetch_invitation(token: str):
+def get_invitation(token: str):
     query_tuple = ("SELECT * FROM invite_tokens WHERE token = %s", (token,))
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return CompanyInvitation(**result["result"][0])
+        return InviteToken(**result["result"][0])
     else:
         return None
 
@@ -225,5 +227,14 @@ def fetch_employee_ids(company_id: uuid.UUID):
     result = db.execute_one(query_tuple)
     if result["result"]:
         return [row["account_id"] for row in result["result"]]
+    else:
+        return []
+
+
+def get_company_by_id(company_id: uuid.UUID):
+    query_tuple = ("SELECT * FROM companies WHERE id = %s", (company_id,))
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return Company(**result["result"][0])
     else:
         return None
