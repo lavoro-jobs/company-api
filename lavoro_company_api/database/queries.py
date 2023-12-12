@@ -158,3 +158,12 @@ def delete_invitation(token: str):
     query_tuple = ("DELETE FROM invite_tokens WHERE token = %s", (token,))
     result = db.execute_one(query_tuple)
     return result["affected_rows"] == 1
+
+
+def get_company_by_id(company_id: uuid.UUID):
+    query_tuple = ("SELECT * FROM companies WHERE id = %s", (company_id,))
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return Company(**result["result"][0])
+    else:
+        return None
