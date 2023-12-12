@@ -27,7 +27,14 @@ def get_recruiter_profile(account_id: uuid.UUID):
 
 
 def get_recruiter_profile_with_company_name(account_id: uuid.UUID):
-    recruiter_profile = queries.fetch_recruiter_profile_with_company_name(account_id)
+    recruiter_profile = queries.get_recruiter_profile_with_company_name(account_id)
     if not recruiter_profile:
         raise HTTPException(status_code=404, detail="Recruiter profile not found")
     return recruiter_profile
+
+
+def get_invitation(invite_token: str):
+    invitation = queries.get_invitation(invite_token)
+    if not invitation:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+    return invitation
