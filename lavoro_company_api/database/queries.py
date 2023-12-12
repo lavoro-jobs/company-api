@@ -6,14 +6,6 @@ from typing import Union
 
 from lavoro_company_api.database import db
 
-# from lavoro_library.models import (
-#     CompanyInDB,
-#     CompanyInvitation,
-#     RecruiterProfileInDB,
-#     RecruiterProfileWithCompanyName,
-#     RecruiterRole,
-# )
-
 from lavoro_library.model.company_api.db_models import Company, RecruiterProfile, InviteToken, RecruiterRole
 from lavoro_library.model.company_api.dtos import RecruiterProfileWithCompanyNameDTO
 

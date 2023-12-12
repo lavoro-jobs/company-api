@@ -5,8 +5,8 @@ from fastapi import HTTPException
 from lavoro_company_api.common import send_invite_email
 
 from lavoro_company_api.database import queries
+from lavoro_library.model.company_api.db_models import RecruiterRole
 from lavoro_library.model.company_api.dtos import CreateCompanyDTO
-from lavoro_library.models import RecruiterRole
 
 
 def create_company(recruiter_account_id: uuid.UUID, payload: CreateCompanyDTO):
