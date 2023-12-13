@@ -159,3 +159,51 @@ def get_company_by_id(company_id: uuid.UUID):
         return Company(**result["result"][0])
     else:
         return None
+<<<<<<< Updated upstream
+=======
+
+
+def get_job_post_by_id(job_post_id: uuid.UUID):
+    query_tuple = ("SELECT * FROM job_posts WHERE id = %s", (job_post_id,))
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return JobPost(**result["result"][0])
+    else:
+        return None
+
+
+def get_job_posts_by_company(company_id: uuid.UUID):
+    query_tuple = ("SELECT * FROM job_posts WHERE company_id = %s", (company_id,))
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return [JobPost(**row) for row in result["result"]]
+    else:
+        return []
+
+
+def get_job_posts_by_recruiter(recruiter_id: uuid.UUID):
+    query_tuple = (
+        """
+        SELECT job_posts.*
+        FROM job_posts
+        LEFT JOIN assignees
+        ON job_posts.id = assignees.job_post_id
+        WHERE assignees.recruiter_account_id = %s;
+        """,
+        (recruiter_id,),
+    )
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return [JobPost(**row) for row in result["result"]]
+    else:
+        return []
+
+
+def get_assignees(job_post_id: uuid.UUID):
+    query_tuple = ("SELECT recruiter_account_id FROM assignees WHERE job_post_id = %s", (job_post_id,))
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return [row["recruiter_account_id"] for row in result["result"]]
+    else:
+        return []
+>>>>>>> Stashed changes
