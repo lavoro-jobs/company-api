@@ -9,7 +9,7 @@ from typing import Union
 
 from lavoro_company_api.database import db
 
-from lavoro_library.model.company_api.db_models import Company, RecruiterProfile, InviteToken, RecruiterRole
+from lavoro_library.model.company_api.db_models import Company, JobPost, RecruiterProfile, InviteToken, RecruiterRole
 from lavoro_library.model.company_api.dtos import RecruiterProfileWithCompanyNameDTO
 from lavoro_library.model.shared import Point
 
@@ -156,12 +156,12 @@ def delete_invitation(token: str):
     return result["affected_rows"] == 1
 
 
-def insert_and_select_job_post(
+def create_and_get_job_post(
     company_id: uuid.UUID,
     position_id: int,
     description: str,
     education_level_id: int,
-    skill_id_list: list,
+    skill_ids: list,
     work_type_id: int,
     work_location: Point,
     contract_type_id: int,
@@ -175,7 +175,7 @@ def insert_and_select_job_post(
             position_id,
             description,
             education_level_id,
-            skill_id_list,
+            skill_ids,
             work_type_id,
             work_location,
             contract_type_id,
@@ -195,7 +195,7 @@ def insert_and_select_job_post(
             position_id,
             description,
             education_level_id,
-            skill_id_list,
+            skill_ids,
             work_type_id,
             point,
             contract_type_id,
@@ -207,14 +207,14 @@ def insert_and_select_job_post(
 
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return result["result"][0]
+        return JobPost(**result["result"][0])
     else:
         return None
 
 
-def insert_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
+def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
     query = """
-        INSERT INTO job_post_assignees (job_post_id, assignee)
+        INSERT INTO assignees (job_post_id, recruiter_account_id)
         VALUES (%s, %s);
         """
     query_tuple_list = [(query, (job_post_id, assignee)) for assignee in assignees]
@@ -222,7 +222,7 @@ def insert_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
     return result["affected_rows"] == 1
 
 
-def fetch_employee_ids(company_id: uuid.UUID):
+def get_employee_ids(company_id: uuid.UUID):
     query_tuple = ("SELECT account_id FROM recruiter_profiles WHERE company_id = %s", (company_id,))
     result = db.execute_one(query_tuple)
     if result["result"]:
@@ -238,3 +238,39 @@ def get_company_by_id(company_id: uuid.UUID):
         return Company(**result["result"][0])
     else:
         return None
+
+
+def get_job_post_by_id(job_post_id: uuid.UUID):
+    query_tuple = ("SELECT * FROM job_posts WHERE id = %s", (job_post_id,))
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return JobPost(**result["result"][0])
+    else:
+        return None
+
+
+def get_job_posts_by_company(company_id: uuid.UUID):
+    query_tuple = ("SELECT * FROM job_posts WHERE company_id = %s", (company_id,))
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return [JobPost(**row) for row in result["result"]]
+    else:
+        return []
+
+
+def get_job_posts_by_recruiter(recruiter_id: uuid.UUID):
+    query_tuple = (
+        """
+        SELECT job_posts.*
+        FROM job_posts
+        LEFT JOIN assignees
+        ON job_posts.id = assignees.job_post_id
+        WHERE assignees.recruiter_account_id = %s;
+        """,
+        (recruiter_id,),
+    )
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return [JobPost(**row) for row in result["result"]]
+    else:
+        return []
