@@ -6,7 +6,7 @@ from typing import Union
 
 from lavoro_company_api.database import db
 
-from lavoro_library.model.company_api.db_models import Company, RecruiterProfile, InviteToken, RecruiterRole
+from lavoro_library.model.company_api.db_models import Company, JobPost, RecruiterProfile, InviteToken, RecruiterRole
 from lavoro_library.model.company_api.dtos import RecruiterProfileWithCompanyNameDTO
 
 
@@ -159,8 +159,6 @@ def get_company_by_id(company_id: uuid.UUID):
         return Company(**result["result"][0])
     else:
         return None
-<<<<<<< Updated upstream
-=======
 
 
 def get_job_post_by_id(job_post_id: uuid.UUID):
@@ -206,4 +204,3 @@ def get_assignees(job_post_id: uuid.UUID):
         return [row["recruiter_account_id"] for row in result["result"]]
     else:
         return []
->>>>>>> Stashed changes
