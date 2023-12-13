@@ -163,6 +163,7 @@ def create_and_get_job_post(
     education_level_id: int,
     skill_ids: list,
     work_type_id: int,
+    seniority_level: int,
     work_location: Point,
     contract_type_id: int,
     salary_min: float,
@@ -177,13 +178,14 @@ def create_and_get_job_post(
             education_level_id,
             skill_ids,
             work_type_id,
+            seniority_level,
             work_location,
             contract_type_id,
             salary_min,
             salary_max,
             end_date
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING *;
     """
     point = (work_location.get("longitude"), work_location.get("latitude"))
@@ -197,6 +199,7 @@ def create_and_get_job_post(
             education_level_id,
             skill_ids,
             work_type_id,
+            seniority_level,
             point,
             contract_type_id,
             salary_min,
