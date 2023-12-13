@@ -274,3 +274,12 @@ def get_job_posts_by_recruiter(recruiter_id: uuid.UUID):
         return [JobPost(**row) for row in result["result"]]
     else:
         return []
+
+
+def get_assignees(job_post_id: uuid.UUID):
+    query_tuple = ("SELECT recruiter_account_id FROM assignees WHERE job_post_id = %s", (job_post_id,))
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return [row["recruiter_account_id"] for row in result["result"]]
+    else:
+        return []
