@@ -9,7 +9,14 @@ from typing import Union
 
 from lavoro_company_api.database import db
 
-from lavoro_library.model.company_api.db_models import Company, JobPost, RecruiterProfile, InviteToken, RecruiterRole
+from lavoro_library.model.company_api.db_models import (
+    Assignee,
+    Company,
+    JobPost,
+    RecruiterProfile,
+    InviteToken,
+    RecruiterRole,
+)
 from lavoro_library.model.company_api.dtos import RecruiterProfileWithCompanyNameDTO
 from lavoro_library.model.shared import Point
 
@@ -218,15 +225,31 @@ def create_and_get_job_post(
 def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
     query = """
         INSERT INTO assignees (job_post_id, recruiter_account_id)
-        VALUES (%s, %s);
+        VALUES (%s, %s)
+        RETURNING *;
         """
     query_tuple_list = [(query, (job_post_id, assignee)) for assignee in assignees]
     result = db.execute_many(query_tuple_list)
-    return result["affected_rows"] == 1
+    if result["result"]:
+        return [Assignee(**row) for row in result["result"]]
+    else:
+        return []
 
 
-def get_employee_ids(company_id: uuid.UUID):
-    query_tuple = ("SELECT account_id FROM recruiter_profiles WHERE company_id = %s", (company_id,))
+def get_employee_ids_by_job_post_id(job_post_id: uuid.UUID):
+    query_tuple = (
+        """
+        SELECT recruiter_profiles.account_id
+        FROM recruiter_profiles
+        LEFT JOIN companies
+        ON recruiter_profiles.company_id = companies.id
+        LEFT JOIN job_posts
+        ON companies.id = job_posts.company_id
+        WHERE job_posts.id = %s;
+        """,
+        (job_post_id,),
+    )
+
     result = db.execute_one(query_tuple)
     if result["result"]:
         return [row["account_id"] for row in result["result"]]

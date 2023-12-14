@@ -1,23 +1,29 @@
+from typing import List
 import uuid
 
 from fastapi import HTTPException
 
 from lavoro_company_api.database import queries
-from lavoro_library.model.company_api.dtos import CreateJobPostDTO
+from lavoro_library.model.company_api.dtos import CreateAssigneesDTO, CreateJobPostDTO
 
 
 def create_job_post(company_id: uuid.UUID, payload: CreateJobPostDTO):
-    employee_ids = queries.get_employee_ids(company_id)
-    for assignee in payload.assignees:
-        if assignee not in employee_ids:
-            raise HTTPException(status_code=400, detail="Assignee is not an employee of the company")
     job_post = payload.model_dump(exclude={"assignees"})
-    assignees = payload.assignees
     created_job_post = queries.create_and_get_job_post(company_id, **job_post)
     if not created_job_post:
         raise HTTPException(status_code=400, detail="Job post could not be created")
-    queries.create_assignees(created_job_post.id, assignees)
-    return {"detail": "Job post created"}
+    return created_job_post
+
+
+def create_assignees(job_post_id: uuid.UUID, payload: CreateAssigneesDTO):
+    employee_ids = queries.get_employee_ids_by_job_post_id(job_post_id)
+    previous_assignees = queries.get_assignees(job_post_id)
+    for assignee in payload.assignees:
+        if assignee not in employee_ids:
+            raise HTTPException(status_code=400, detail="Assignee is not an employee of the company")
+        if assignee in previous_assignees:
+            raise HTTPException(status_code=400, detail="Assignee is already assigned to this job post")
+    return queries.create_assignees(job_post_id, payload.assignees)
 
 
 def get_job_post(job_post_id: uuid.UUID):
