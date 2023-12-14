@@ -15,8 +15,8 @@ def create_job_post(company_id: uuid.UUID, payload: CreateJobPostDTO):
 
 
 @router.post("/create-assignees/{job_post_id}")
-def create_assignees(job_post_id: uuid.UUID, payload: CreateAssigneesDTO):
-    return job_post_service.create_assignees(job_post_id, payload)
+def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
+    return job_post_service.create_assignees(job_post_id, assignees)
 
 
 @router.get("/get-job-post")

@@ -15,15 +15,15 @@ def create_job_post(company_id: uuid.UUID, payload: CreateJobPostDTO):
     return created_job_post
 
 
-def create_assignees(job_post_id: uuid.UUID, payload: CreateAssigneesDTO):
+def create_assignees(job_post_id: uuid.UUID, assignees: CreateAssigneesDTO):
     employee_ids = queries.get_employee_ids_by_job_post_id(job_post_id)
     previous_assignees = queries.get_assignees(job_post_id)
-    for assignee in payload.assignees:
+    for assignee in assignees:
         if assignee not in employee_ids:
             raise HTTPException(status_code=400, detail="Assignee is not an employee of the company")
         if assignee in previous_assignees:
             raise HTTPException(status_code=400, detail="Assignee is already assigned to this job post")
-    return queries.create_assignees(job_post_id, payload.assignees)
+    return queries.create_assignees(job_post_id, assignees)
 
 
 def get_job_post(job_post_id: uuid.UUID):
