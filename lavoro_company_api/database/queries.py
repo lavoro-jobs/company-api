@@ -85,11 +85,11 @@ def update_recruiter_profile(id: uuid.UUID, form_data: UpdateRecruiterProfileDTO
 
     query_params.append(id)
 
-    query = f"UPDATE recruiter_profiles SET {', '.join(update_fields)} WHERE account_id = %s RETURNING *"
+    query = f"UPDATE recruiter_profiles SET {', '.join(update_fields)} WHERE account_id = %s"
     result = db.execute_one((query, tuple(query_params)))
 
-    if result["result"]:
-        return RecruiterProfile(**result["result"][0])
+    if result["affected_rows"]:
+        return result["affected_rows"] == 1
     return None
 
 
