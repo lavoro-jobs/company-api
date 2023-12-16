@@ -19,7 +19,7 @@ def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
     return job_post_service.create_assignees(job_post_id, assignees)
 
 
-@router.get("/get-job-post")
+@router.get("/get-job-post/{job_post_id}")
 def get_job_post(job_post_id: uuid.UUID):
     return job_post_service.get_job_post(job_post_id)
 
@@ -32,3 +32,8 @@ def get_job_posts_by_company(company_id: uuid.UUID):
 @router.get("/get-job-posts-by-recruiter/{recruiter_id}")
 def get_job_posts_by_recruiter(recruiter_id: uuid.UUID):
     return job_post_service.get_job_posts_by_recruiter(recruiter_id)
+
+
+@router.get("/get-assignees/{job_post_id}")
+def get_assignees(job_post_id: uuid.UUID):
+    return job_post_service.get_assignees(job_post_id)
