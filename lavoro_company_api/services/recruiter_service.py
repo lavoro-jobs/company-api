@@ -3,7 +3,7 @@ import uuid
 from fastapi import HTTPException
 
 from lavoro_company_api.database import queries
-from lavoro_library.model.company_api.dtos import CreateRecruiterProfileDTO
+from lavoro_library.model.company_api.dtos import CreateRecruiterProfileDTO, UpdateRecruiterProfileDTO
 from lavoro_library.model.company_api.db_models import RecruiterRole
 
 
@@ -24,6 +24,13 @@ def get_recruiter_profile(account_id: uuid.UUID):
     if not recruiter_profile:
         raise HTTPException(status_code=404, detail="Recruiter profile not found")
     return recruiter_profile
+
+
+def update_recruiter_profile(account_id: uuid.UUID, form_data: UpdateRecruiterProfileDTO):
+    result = queries.update_recruiter_profile(account_id, form_data)
+    if not result:
+        raise HTTPException(status_code=400, detail="Applicant profile could not be updated")
+    return result
 
 
 def get_recruiter_profile_with_company_name(account_id: uuid.UUID):

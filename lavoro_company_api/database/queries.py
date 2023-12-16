@@ -10,7 +10,7 @@ from typing import Union
 from lavoro_company_api.database import db
 
 from lavoro_library.model.company_api.db_models import Company, JobPost, RecruiterProfile, InviteToken, RecruiterRole
-from lavoro_library.model.company_api.dtos import RecruiterProfileWithCompanyNameDTO
+from lavoro_library.model.company_api.dtos import RecruiterProfileWithCompanyNameDTO, UpdateRecruiterProfileDTO
 from lavoro_library.model.shared import Point
 
 
@@ -69,6 +69,28 @@ def get_recruiter_profile(account_id: uuid.UUID):
         return RecruiterProfile(**result["result"][0])
     else:
         return None
+
+
+def update_recruiter_profile(id: uuid.UUID, form_data: UpdateRecruiterProfileDTO):
+    update_fields = []
+    query_params = []
+
+    for field, value in form_data.model_dump(exclude_unset=True).items():
+        if value is None:
+            continue
+        if value == "":
+            value = None
+        update_fields.append(f"{field} = %s")
+        query_params.append(value)
+
+    query_params.append(id)
+
+    query = f"UPDATE recruiter_profiles SET {', '.join(update_fields)} WHERE account_id = %s"
+    result = db.execute_one((query, tuple(query_params)))
+
+    if result["affected_rows"]:
+        return result["affected_rows"] == 1
+    return None
 
 
 def get_recruiter_profile_with_company_name(account_id: uuid.UUID):
