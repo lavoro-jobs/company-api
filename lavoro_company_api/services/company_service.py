@@ -26,6 +26,18 @@ def create_company(recruiter_account_id: uuid.UUID, payload: CreateCompanyDTO):
     return result
 
 
+def get_company_by_recruiter(recruiter_account_id: uuid.UUID):
+    recruiter_profile = queries.get_recruiter_profile(recruiter_account_id)
+    if not recruiter_profile:
+        raise HTTPException(status_code=404, detail="Recruiter profile not found")
+    if not recruiter_profile.company_id:
+        raise HTTPException(status_code=404, detail="Recruiter does not have a company")
+    company = queries.get_company_by_id(recruiter_profile.company_id)
+    if not company:
+        raise HTTPException(status_code=404, detail="Company not found")
+    return company
+
+
 async def invite_recruiter(company_id: uuid.UUID, new_recruiter_email: str):
     invite_token = secrets.token_urlsafe(32)
     result = queries.create_invite_token_and_revoke_old(company_id, new_recruiter_email, invite_token)
