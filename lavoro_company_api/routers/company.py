@@ -17,9 +17,9 @@ def create_company(payload: CreateCompanyDTO, recruiter_account_id: uuid.UUID):
     return company_service.create_company(recruiter_account_id, payload)
 
 
-@router.get("/get-company-by-recruiter/{recruiter_account_id}")
-def get_company_by_recruiter(recruiter_account_id: uuid.UUID):
-    return company_service.get_company_by_recruiter(recruiter_account_id)
+@router.get("/get-company/{company_id}")
+def get_company(company_id: uuid.UUID):
+    return company_service.get_company(company_id)
 
 
 @router.post("/invite-recruiter/{company_id}/{new_recruiter_email}")

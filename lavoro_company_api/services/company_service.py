@@ -26,15 +26,10 @@ def create_company(recruiter_account_id: uuid.UUID, payload: CreateCompanyDTO):
     return result
 
 
-def get_company_by_recruiter(recruiter_account_id: uuid.UUID):
-    recruiter_profile = queries.get_recruiter_profile(recruiter_account_id)
-    if not recruiter_profile:
-        raise HTTPException(status_code=404, detail="Recruiter profile not found")
-    if not recruiter_profile.company_id:
-        raise HTTPException(status_code=404, detail="Recruiter does not have a company")
-    company = queries.get_company_by_id(recruiter_profile.company_id)
+def get_company(company_id: uuid.UUID):
+    company = queries.get_company_by_id(company_id)
     if not company:
-        raise HTTPException(status_code=404, detail="Company not found")
+        raise HTTPException(status_code=404, detail="Recruiter profile not found")
     return company
 
 
