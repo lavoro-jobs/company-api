@@ -29,7 +29,7 @@ def create_company(recruiter_account_id: uuid.UUID, payload: CreateCompanyDTO):
 def get_company(company_id: uuid.UUID):
     company = queries.get_company_by_id(company_id)
     if not company:
-        raise HTTPException(status_code=404, detail="Recruiter profile not found")
+        raise HTTPException(status_code=404, detail="Company not found")
     return company
 
 
