@@ -45,3 +45,10 @@ def get_invitation(invite_token: str):
     if not invitation:
         raise HTTPException(status_code=404, detail="Invitation not found")
     return invitation
+
+
+def get_recruiters_by_company(company_id: uuid.UUID):
+    recruiters = queries.get_recruiters_by_company(company_id)
+    if not recruiters:
+        raise HTTPException(status_code=404, detail="Recruiters not found")
+    return recruiters

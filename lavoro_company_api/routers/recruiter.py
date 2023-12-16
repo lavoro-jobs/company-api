@@ -34,3 +34,8 @@ def get_recruiter_profile_with_company_name(account_id: uuid.UUID):
 @router.get("/get-invitation/{invite_token}")
 def get_invitation(invite_token: str):
     return recruiter_service.get_invitation(invite_token)
+
+
+@router.get("/get-recruiters-by-company/{company_id}")
+def get_recruiters_by_company(company_id: uuid.UUID):
+    return recruiter_service.get_recruiters_by_company(company_id)

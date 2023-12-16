@@ -308,3 +308,19 @@ def get_assignees(job_post_id: uuid.UUID):
         return [row["recruiter_account_id"] for row in result["result"]]
     else:
         return []
+
+
+def get_recruiters_by_company(company_id: uuid.UUID):
+    query_tuple = (
+        """
+        SELECT *
+        FROM recruiter_profiles
+        WHERE company_id = %s;
+        """,
+        (company_id,),
+    )
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return [RecruiterProfile(**row) for row in result["result"]]
+    else:
+        return []
