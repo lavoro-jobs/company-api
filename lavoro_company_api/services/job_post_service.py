@@ -30,19 +30,18 @@ def get_job_post(job_post_id: uuid.UUID):
     job_post = queries.get_job_post_by_id(job_post_id)
     if not job_post:
         raise HTTPException(status_code=404, detail="Job post not found")
-    job_post.assignees = queries.get_assignees(job_post.id)
     return job_post
 
 
 def get_job_posts_by_company(company_id: uuid.UUID):
     job_posts = queries.get_job_posts_by_company(company_id)
-    for job_post in job_posts:
-        job_post.assignees = queries.get_assignees(job_post.id)
     return job_posts
 
 
 def get_job_posts_by_recruiter(recruiter_id: uuid.UUID):
     job_posts = queries.get_job_posts_by_recruiter(recruiter_id)
-    for job_post in job_posts:
-        job_post.assignees = queries.get_assignees(job_post.id)
     return job_posts
+
+
+def get_assignees(job_post_id: uuid.UUID):
+    return queries.get_assignees(job_post_id)
