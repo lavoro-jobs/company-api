@@ -1,9 +1,10 @@
+from typing import List
 import uuid
 
 from fastapi import HTTPException
 
 from lavoro_company_api.database import queries
-from lavoro_library.model.company_api.dtos import CreateJobPostDTO
+from lavoro_library.model.company_api.dtos import CreateJobPostDTO, UpdateJobPostDTO
 
 
 def create_job_post(company_id: uuid.UUID, payload: CreateJobPostDTO):
@@ -18,6 +19,13 @@ def create_job_post(company_id: uuid.UUID, payload: CreateJobPostDTO):
         raise HTTPException(status_code=400, detail="Job post could not be created")
     queries.create_assignees(created_job_post.id, assignees)
     return {"detail": "Job post created"}
+
+
+def update_job_post(job_post_id: uuid.UUID, payload: UpdateJobPostDTO):
+    result = queries.update_job_post(job_post_id, payload)
+    if not result:
+        raise HTTPException(status_code=400, detail="Job post could not be updated")
+    return result
 
 
 def get_job_post(job_post_id: uuid.UUID):
