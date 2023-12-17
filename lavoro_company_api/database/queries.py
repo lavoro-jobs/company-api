@@ -17,7 +17,11 @@ from lavoro_library.model.company_api.db_models import (
     InviteToken,
     RecruiterRole,
 )
-from lavoro_library.model.company_api.dtos import RecruiterProfileWithCompanyNameDTO, UpdateRecruiterProfileDTO
+from lavoro_library.model.company_api.dtos import (
+    RecruiterProfileWithCompanyNameDTO,
+    UpdateJobPostDTO,
+    UpdateRecruiterProfileDTO,
+)
 from lavoro_library.model.shared import Point
 
 
@@ -264,6 +268,44 @@ def create_and_get_job_post(
         return JobPost(**result["result"][0])
     else:
         return None
+
+
+def update_job_post(
+    job_post_id: uuid.UUID,
+    form_data: UpdateJobPostDTO,
+):
+    prepare_tuple = prepare_fields(job_post_id, form_data)
+    update_fields = prepare_tuple[0]
+    query_params = prepare_tuple[1]
+
+    query = f"UPDATE job_posts SET {', '.join(update_fields)} WHERE id = %s"
+    result = db.execute_one((query, tuple(query_params)))
+
+    if result["affected_rows"]:
+        return result["affected_rows"] == 1
+    return None
+
+
+def prepare_fields(id: uuid.UUID, form_data: UpdateJobPostDTO):
+    update_fields = []
+    query_params = []
+
+    for field, value in form_data.model_dump(exclude_unset=True).items():
+        if value is None:
+            continue
+        if value == "":
+            value = None
+        if field == "work_location":
+            update_fields.append(f"{field} = point(%s, %s)")
+            longitude = value.get("longitude")
+            latitude = value.get("latitude")
+            query_params.extend([longitude, latitude])
+        else:
+            update_fields.append(f"{field} = %s")
+            query_params.append(value)
+
+    query_params.append(id)
+    return update_fields, query_params
 
 
 def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):

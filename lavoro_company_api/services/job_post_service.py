@@ -4,7 +4,7 @@ import uuid
 from fastapi import HTTPException
 
 from lavoro_company_api.database import queries
-from lavoro_library.model.company_api.dtos import CreateAssigneesDTO, CreateJobPostDTO
+from lavoro_library.model.company_api.dtos import CreateAssigneesDTO, CreateJobPostDTO, UpdateJobPostDTO
 
 
 def create_job_post(company_id: uuid.UUID, payload: CreateJobPostDTO):
@@ -24,6 +24,13 @@ def create_assignees(job_post_id: uuid.UUID, assignees: CreateAssigneesDTO):
         if assignee in previous_assignees:
             raise HTTPException(status_code=400, detail="Assignee is already assigned to this job post")
     return queries.create_assignees(job_post_id, assignees)
+
+
+def update_job_post(job_post_id: uuid.UUID, payload: UpdateJobPostDTO):
+    result = queries.update_job_post(job_post_id, payload)
+    if not result:
+        raise HTTPException(status_code=400, detail="Job post could not be updated")
+    return result
 
 
 def get_job_post(job_post_id: uuid.UUID):
