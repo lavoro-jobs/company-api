@@ -33,13 +33,6 @@ def update_job_post(job_post_id: uuid.UUID, payload: UpdateJobPostDTO):
     return result
 
 
-def update_job_post(job_post_id: uuid.UUID, payload: UpdateJobPostDTO):
-    result = queries.update_job_post(job_post_id, payload)
-    if not result:
-        raise HTTPException(status_code=400, detail="Job post could not be updated")
-    return result
-
-
 def get_job_post(job_post_id: uuid.UUID):
     job_post = queries.get_job_post_by_id(job_post_id)
     if not job_post:

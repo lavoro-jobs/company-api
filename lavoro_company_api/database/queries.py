@@ -308,7 +308,7 @@ def update_job_post(
     return None
 
 
-def prepare_fields(id: uuid.UUID, form_data: UpdateJobPostDTO):  # tu nadodat union sa UpdateAsssigneesDTO
+def prepare_fields(id: uuid.UUID, form_data: UpdateJobPostDTO):
     update_fields = []
     query_params = []
 

@@ -19,11 +19,6 @@ def update_job_post(job_post_id: uuid.UUID, payload: UpdateJobPostDTO):
     return job_post_service.update_job_post(job_post_id, payload)
 
 
-@router.patch("/update-job-post/{job_post_id}")
-def update_job_post(job_post_id: uuid.UUID, payload: UpdateJobPostDTO):
-    return job_post_service.update_job_post(job_post_id, payload)
-
-
 @router.post("/create-assignees/{job_post_id}")
 def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
     return job_post_service.create_assignees(job_post_id, assignees)
