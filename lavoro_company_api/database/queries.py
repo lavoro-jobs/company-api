@@ -278,11 +278,11 @@ def update_job_post(
     update_fields = prepare_tuple[0]
     query_params = prepare_tuple[1]
 
-    query = f"UPDATE job_posts SET {', '.join(update_fields)} WHERE id = %s"
+    query = f"UPDATE job_posts SET {', '.join(update_fields)} WHERE id = %s RETURNING *"
     result = db.execute_one((query, tuple(query_params)))
 
-    if result["affected_rows"]:
-        return result["affected_rows"] == 1
+    if result["result"]:
+        return JobPost(**result["result"][0])
     return None
 
 
