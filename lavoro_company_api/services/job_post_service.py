@@ -15,6 +15,20 @@ def create_job_post(company_id: uuid.UUID, payload: CreateJobPostDTO):
     return created_job_post
 
 
+def update_job_post(job_post_id: uuid.UUID, payload: UpdateJobPostDTO):
+    result = queries.update_job_post(job_post_id, payload)
+    if not result:
+        raise HTTPException(status_code=400, detail="Job post could not be updated")
+    return result
+
+
+def soft_delete_job_post(job_post_id: uuid.UUID):
+    result = queries.soft_delete_job_post(job_post_id)
+    if not result:
+        raise HTTPException(status_code=400, detail="Job post could not be deleted")
+    return result
+
+
 def create_assignees(job_post_id: uuid.UUID, assignees: CreateAssigneesDTO):
     employee_ids = queries.get_employee_ids_by_job_post_id(job_post_id)
     previous_assignees = queries.get_assignees(job_post_id)
@@ -24,13 +38,6 @@ def create_assignees(job_post_id: uuid.UUID, assignees: CreateAssigneesDTO):
         if assignee in previous_assignees:
             raise HTTPException(status_code=400, detail="Assignee is already assigned to this job post")
     return queries.create_assignees(job_post_id, assignees)
-
-
-def update_job_post(job_post_id: uuid.UUID, payload: UpdateJobPostDTO):
-    result = queries.update_job_post(job_post_id, payload)
-    if not result:
-        raise HTTPException(status_code=400, detail="Job post could not be updated")
-    return result
 
 
 def get_job_post(job_post_id: uuid.UUID):

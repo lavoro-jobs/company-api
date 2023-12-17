@@ -19,6 +19,11 @@ def update_job_post(job_post_id: uuid.UUID, payload: UpdateJobPostDTO):
     return job_post_service.update_job_post(job_post_id, payload)
 
 
+@router.patch("/soft-delete-job-post/{job_post_id}")
+def soft_delete_job_post(job_post_id: uuid.UUID):
+    return job_post_service.soft_delete_job_post(job_post_id)
+
+
 @router.post("/create-assignees/{job_post_id}")
 def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
     return job_post_service.create_assignees(job_post_id, assignees)
