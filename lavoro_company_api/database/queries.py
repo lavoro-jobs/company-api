@@ -286,6 +286,22 @@ def update_job_post(
     return None
 
 
+def soft_delete_job_post(job_post_id: uuid.UUID):
+    query_tuple = (
+        """
+        UPDATE job_posts
+        SET end_date = now()
+        WHERE id = %s
+        RETURNING *;
+        """,
+        (job_post_id,),
+    )
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return JobPost(**result["result"][0])
+    return None
+
+
 def prepare_fields(id: uuid.UUID, form_data: UpdateJobPostDTO):
     update_fields = []
     query_params = []
