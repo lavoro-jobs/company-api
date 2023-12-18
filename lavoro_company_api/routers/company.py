@@ -7,7 +7,7 @@ from pydantic import EmailStr
 
 from lavoro_company_api.services import company_service
 
-from lavoro_library.model.company_api.dtos import CreateCompanyDTO
+from lavoro_library.model.company_api.dtos import CreateCompanyDTO, UpdateCompanyDTO
 
 router = APIRouter(prefix="/company", tags=["company"])
 
@@ -20,6 +20,11 @@ def create_company(payload: CreateCompanyDTO, recruiter_account_id: uuid.UUID):
 @router.get("/get-company/{company_id}")
 def get_company(company_id: uuid.UUID):
     return company_service.get_company(company_id)
+
+
+@router.patch("/update-company/{company_id}")
+def update_company(company_id: uuid.UUID, payload: UpdateCompanyDTO):
+    return company_service.update_company(company_id, payload)
 
 
 @router.post("/invite-recruiter/{company_id}/{new_recruiter_email}")
