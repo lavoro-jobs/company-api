@@ -19,6 +19,7 @@ from lavoro_library.model.company_api.db_models import (
 )
 from lavoro_library.model.company_api.dtos import (
     RecruiterProfileWithCompanyNameDTO,
+    UpdateCompanyDTO,
     UpdateJobPostDTO,
     UpdateRecruiterProfileDTO,
 )
@@ -436,3 +437,25 @@ def get_recruiters_by_company(company_id: uuid.UUID):
         return [RecruiterProfile(**row) for row in result["result"]]
     else:
         return []
+
+
+def update_company(company_id: uuid.UUID, payload: UpdateCompanyDTO):
+    update_fields = []
+    query_params = []
+
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        if value is None:
+            continue
+        if value == "":
+            value = None
+        update_fields.append(f"{field} = %s")
+        query_params.append(value)
+
+    query_params.append(company_id)
+
+    query = f"UPDATE companies SET {', '.join(update_fields)} WHERE id = %s"
+    result = db.execute_one((query, tuple(query_params)))
+
+    if result["affected_rows"]:
+        return result["affected_rows"] == 1
+    return None

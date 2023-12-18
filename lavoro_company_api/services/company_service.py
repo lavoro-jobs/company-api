@@ -6,7 +6,7 @@ from lavoro_company_api.common import send_invite_email
 
 from lavoro_company_api.database import queries
 from lavoro_library.model.company_api.db_models import RecruiterRole
-from lavoro_library.model.company_api.dtos import CreateCompanyDTO
+from lavoro_library.model.company_api.dtos import CreateCompanyDTO, UpdateCompanyDTO
 
 
 def create_company(recruiter_account_id: uuid.UUID, payload: CreateCompanyDTO):
@@ -31,6 +31,13 @@ def get_company(company_id: uuid.UUID):
     if not company:
         raise HTTPException(status_code=404, detail="Company not found")
     return company
+
+
+def update_company(company_id: uuid.UUID, payload: UpdateCompanyDTO):
+    result = queries.update_company(company_id, payload)
+    if not result:
+        raise HTTPException(status_code=400, detail="Company could not be updated")
+    return result
 
 
 async def invite_recruiter(company_id: uuid.UUID, new_recruiter_email: str):
