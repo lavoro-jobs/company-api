@@ -57,5 +57,10 @@ def get_job_posts_by_recruiter(recruiter_id: uuid.UUID):
     return job_posts
 
 
+def get_random_job_posts(count: int):
+    job_posts = queries.get_random_job_posts(count)
+    return job_posts
+
+
 def get_assignees(job_post_id: uuid.UUID):
     return queries.get_assignees(job_post_id)

@@ -44,6 +44,11 @@ def get_job_posts_by_recruiter(recruiter_id: uuid.UUID):
     return job_post_service.get_job_posts_by_recruiter(recruiter_id)
 
 
+@router.get("/get-random-job-posts/{count}")
+def get_random_job_posts(count: int):
+    return job_post_service.get_random_job_posts(count)
+
+
 @router.get("/get-assignees/{job_post_id}")
 def get_assignees(job_post_id: uuid.UUID):
     return job_post_service.get_assignees(job_post_id)
