@@ -355,7 +355,7 @@ def get_employee_ids_by_job_post_id(job_post_id: uuid.UUID):
 
     result = db.execute_one(query_tuple)
     if result["result"]:
-        return [row["account_id"] for row in result["result"]]
+        return [uuid.UUID(str(row["account_id"])) for row in result["result"]]
     else:
         return []
 
