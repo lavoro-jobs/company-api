@@ -448,6 +448,8 @@ def update_company(company_id: uuid.UUID, payload: UpdateCompanyDTO):
             continue
         if value == "":
             value = None
+        if field == "logo" and value is not None:
+            value = base64.b64decode(value)
         update_fields.append(f"{field} = %s")
         query_params.append(value)
 
