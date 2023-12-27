@@ -24,6 +24,11 @@ def soft_delete_job_post(job_post_id: uuid.UUID):
     return job_post_service.soft_delete_job_post(job_post_id)
 
 
+@router.delete("/delete-job-post/{job_post_id}")
+def delete_job_post(job_post_id: uuid.UUID):
+    return job_post_service.delete_job_post(job_post_id)
+
+
 @router.post("/create-assignees/{job_post_id}")
 def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
     return job_post_service.create_assignees(job_post_id, assignees)

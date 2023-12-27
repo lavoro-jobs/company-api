@@ -303,6 +303,14 @@ def soft_delete_job_post(job_post_id: uuid.UUID):
     return None
 
 
+def delete_job_post(job_post_id: uuid.UUID):
+    query_tuple = ("DELETE FROM job_posts WHERE id = %s RETURNING *;", (job_post_id,))
+    result = db.execute_one(query_tuple)
+    if result["result"]:
+        return JobPost(**result["result"][0])
+    return None
+
+
 def prepare_fields(id: uuid.UUID, form_data: UpdateJobPostDTO):
     update_fields = []
     query_params = []
