@@ -339,6 +339,19 @@ def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
         return []
 
 
+def remove_assignee(job_post_id: uuid.UUID, recruiter_account_id: uuid.UUID):
+    query_tuple = (
+        """
+        DELETE FROM assignees
+        WHERE job_post_id = %s AND recruiter_account_id = %s
+        RETURNING *;
+        """,
+        (job_post_id, recruiter_account_id),
+    )
+    result = db.execute_one(query_tuple)
+    return result["affected_rows"] == 1
+
+
 def get_employee_ids_by_job_post_id(job_post_id: uuid.UUID):
     query_tuple = (
         """

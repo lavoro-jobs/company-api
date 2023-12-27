@@ -41,6 +41,13 @@ def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
     return queries.create_assignees(job_post_id, assignees)
 
 
+def remove_assignee(job_post_id: uuid.UUID, recruiter_account_id: uuid.UUID):
+    result = queries.remove_assignee(job_post_id, recruiter_account_id)
+    if not result:
+        raise HTTPException(status_code=400, detail="Assignee could not be removed")
+    return result
+
+
 def get_job_post(job_post_id: uuid.UUID):
     job_post = queries.get_job_post_by_id(job_post_id)
     if not job_post:
