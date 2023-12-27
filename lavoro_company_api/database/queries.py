@@ -464,7 +464,10 @@ def update_company(company_id: uuid.UUID, payload: UpdateCompanyDTO):
 
 
 def get_random_job_posts(count: int):
-    query_tuple = ("SELECT * FROM job_posts WHERE end_date < NOW() ORDER BY RANDOM() LIMIT %s", (count,))
+    query_tuple = (
+        "SELECT * FROM job_posts WHERE end_date > NOW() ORDER BY RANDOM() LIMIT %s",
+        (count,),
+    )
     result = db.execute_one(query_tuple)
     if result["result"]:
         return [JobPost(**row) for row in result["result"]]
