@@ -34,6 +34,11 @@ def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
     return job_post_service.create_assignees(job_post_id, assignees)
 
 
+@router.delete("/unassign-job-post/{job_post_id}/{recruiter_account_id}")
+def remove_assignee(job_post_id: uuid.UUID, recruiter_account_id: uuid.UUID):
+    return job_post_service.remove_assignee(job_post_id, recruiter_account_id)
+
+
 @router.get("/get-job-post/{job_post_id}")
 def get_job_post(job_post_id: uuid.UUID):
     return job_post_service.get_job_post(job_post_id)
