@@ -29,6 +29,13 @@ def soft_delete_job_post(job_post_id: uuid.UUID):
     return result
 
 
+def delete_job_post(job_post_id: uuid.UUID):
+    result = queries.delete_job_post(job_post_id)
+    if not result:
+        raise HTTPException(status_code=400, detail="Job post could not be deleted")
+    return result
+
+
 def create_assignees(job_post_id: uuid.UUID, assignees: List[uuid.UUID]):
     employee_ids = queries.get_employee_ids_by_job_post_id(job_post_id)
     previous_assignees = queries.get_assignees(job_post_id)
