@@ -343,8 +343,7 @@ def remove_assignee(job_post_id: uuid.UUID, recruiter_account_id: uuid.UUID):
     query_tuple = (
         """
         DELETE FROM assignees
-        WHERE job_post_id = %s AND recruiter_account_id = %s
-        RETURNING *;
+        WHERE job_post_id = %s AND recruiter_account_id = %s;
         """,
         (job_post_id, recruiter_account_id),
     )
