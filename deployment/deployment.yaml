@@ -25,3 +25,8 @@ spec:
                             secretKeyRef:
                                 name: db-connection-string
                                 key: DB_CONNECTION_STRING
+                      - name: EMAIL_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: email-password
+                                key: EMAIL_PASSWORD
