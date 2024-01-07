@@ -11,9 +11,8 @@ def create_recruiter_profile(account_id: uuid.UUID, recruiter_role: RecruiterRol
     recruiter_profile = queries.get_recruiter_profile(account_id)
     if recruiter_profile:
         raise HTTPException(status_code=400, detail="Recruiter profile already exists")
-    result = queries.create_recruiter_profile(
-        payload.first_name, payload.last_name, account_id, recruiter_role, payload.company_id
-    )
+    recruiter_profile = payload.model_dump()
+    result = queries.create_recruiter_profile(account_id, recruiter_role, **recruiter_profile)
     if not result:
         raise HTTPException(status_code=400, detail="Recruiter profile could not be created")
     return {"detail": "Recruiter profile created"}

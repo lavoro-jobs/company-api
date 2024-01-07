@@ -92,6 +92,8 @@ def update_recruiter_profile(id: uuid.UUID, form_data: UpdateRecruiterProfileDTO
             continue
         if value == "":
             value = None
+        if field == "profile_picture" and value is not None:
+            value = base64.b64decode(value)
         update_fields.append(f"{field} = %s")
         query_params.append(value)
 
@@ -146,20 +148,26 @@ def get_recruiter_profile_with_company_name(account_id: uuid.UUID):
 
 
 def create_recruiter_profile(
-    first_name: str,
-    last_name: str,
     account_id: uuid.UUID,
     recruiter_role: RecruiterRole,
+    first_name: str,
+    last_name: str,
+    profile_picture: Union[str, None],
     company_id: uuid.UUID = None,
 ):
-    query_tuple = (
+    columns = ["first_name", "last_name", "company_id", "account_id", "recruiter_role"]
+    values = [first_name, last_name, company_id, account_id, recruiter_role]
+
+    if profile_picture:
+        columns.append("profile_picture")
+        values.append(base64.b64decode(profile_picture))
+
+    query = f"""
+        INSERT INTO recruiter_profiles ({', '.join(columns)})
+        VALUES ({', '.join(['%s'] * len(values))})
         """
-        INSERT INTO recruiter_profiles (first_name, last_name, company_id, account_id, recruiter_role)
-        VALUES (%s, %s, %s, %s, %s);
-        """,
-        (first_name, last_name, company_id, account_id, recruiter_role),
-    )
-    result = db.execute_one(query_tuple)
+
+    result = db.execute_one((query, tuple(values)))
     return result["affected_rows"] == 1
 
 
