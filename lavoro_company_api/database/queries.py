@@ -107,28 +107,6 @@ def update_recruiter_profile(id: uuid.UUID, form_data: UpdateRecruiterProfileDTO
     return None
 
 
-def update_recruiter_profile(id: uuid.UUID, form_data: UpdateRecruiterProfileDTO):
-    update_fields = []
-    query_params = []
-
-    for field, value in form_data.model_dump(exclude_unset=True).items():
-        if value is None:
-            continue
-        if value == "":
-            value = None
-        update_fields.append(f"{field} = %s")
-        query_params.append(value)
-
-    query_params.append(id)
-
-    query = f"UPDATE recruiter_profiles SET {', '.join(update_fields)} WHERE account_id = %s"
-    result = db.execute_one((query, tuple(query_params)))
-
-    if result["affected_rows"]:
-        return result["affected_rows"] == 1
-    return None
-
-
 def get_recruiter_profile_with_company_name(account_id: uuid.UUID):
     query_tuple = (
         """
