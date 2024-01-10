@@ -1,6 +1,10 @@
+import os
 from pydantic import EmailStr
 
 from lavoro_library.email import send_email
+
+
+FRONTEND_URL = os.environ["FRONTEND_URL"]
 
 
 def send_invite_email(email: EmailStr, token: str, company_name: str):
@@ -8,7 +12,7 @@ def send_invite_email(email: EmailStr, token: str, company_name: str):
     <html>
         <body>
             <h1>You have been invited to join {company_name}</h1>
-            <p>Join the company by clicking on the link: <a href="http://localhost:3000/join-company/{token}">http://localhost:3000/join-company/{token}</a></p>
+            <p>Join the company by clicking on the link: <a href="{FRONTEND_URL}/join-company/{token}">{FRONTEND_URL}/join-company/{token}</a></p>
         </body>
     </html>
     """
